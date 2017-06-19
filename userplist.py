@@ -4,6 +4,7 @@ import uuid
 
 import shadowhash
 
+
 class UserPlistException(Exception):
     '''Error when creating user plist'''
     pass
@@ -27,8 +28,8 @@ def generate(user_dict):
     user[u'shell'] = [user_dict.get(u'shell', u'/bin/bash')]
     user[u'generateduid'] = [user_dict.get(u'uuid', str(uuid.uuid4()).upper())]
     user[u'passwd'] = [u'********']
-    user[u'authentication_authority'] = (
-        ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>')
+    user[u'authentication_authority'] = [
+        ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>']
     user[u'ShadowHashData'] = [user_dict['ShadowHashData']]
     for key in WRITERS_KEYS:
         user[key] = [user_dict[u'name']]
