@@ -86,7 +86,7 @@ def make_postinstall_script(scripts_path, pkg_info, user_plist):
         if pkg_info.get('is_admin'):
             pi_actions.add(PI_ADD_ADMIN_GROUPS)
             pi_reqs.add(PI_REQ_PLIST_FUNCS)
-        if pkg_info.get('autologin'):
+        if pkg_info.get('kcpassword'):
             pi_actions.add(PI_ENABLE_AUTOLOGIN)
         postinstall = POSTINSTALL_TEMPLATE
         postinstall = postinstall.replace(
@@ -138,6 +138,16 @@ def generate(info, user_plist):
             user_plist_name)
         plistutils.writePlist(user_plist, user_plist_path)
         os.chmod(user_plist_path, 0600)
+        # Save kcpassword.
+        if info.get('kcpassword'):
+            os.makedirs(os.path.join(pkg_root_path, 'private/etc'), 0755)
+            kcpassword_path = os.path.join(
+                pkg_root_path, 'private/etc/kcpassword')
+            f = open(kcpassword_path, 'w')
+            f.write(info.get('kcpassword'))
+            f.close()
+            os.chmod(kcpassword_path, 0600)
+        # now the postinstall script
         scripts_path = os.path.join(tmp_path, 'scripts')
         make_postinstall_script(scripts_path, info, user_plist)
         cmd = ['/usr/bin/pkgbuild',
