@@ -21,8 +21,14 @@ def generate(password):
     iterations = arc4random.randrange(30000, 50000)
     salt = make_salt(32)
     keylen = 128
-    entropy = pbkdf2.pbkdf2_bin(password, salt, iterations=iterations,
-                                keylen=keylen, hashfunc=hashlib.sha512)
+    try:
+        entropy = hashlib.pbkdf2_hmac(
+            'sha512', password, salt, iterations, dklen=keylen)
+    except AttributeError:
+        # old Python, do it a different way
+        entropy = pbkdf2.pbkdf2_bin(
+            password, salt, iterations=iterations, keylen=keylen,
+            hashfunc=hashlib.sha512)
 
     data = {'SALTED-SHA512-PBKDF2': {'entropy': buffer(entropy),
                                      'iterations': iterations,
