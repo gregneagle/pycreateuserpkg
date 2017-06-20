@@ -75,9 +75,10 @@ PI_LIVE_KILLDS = """
 """
 
 
-def make_postinstall_script(scripts_path, pkg_info, user_plist):
+def make_postinstall_script(scripts_path, pkg_info):
     # Create postinstall script.
     try:
+        user_plist = pkg_info['user_plist']
         os.makedirs(scripts_path, 0755)
         pi_reqs = set()
         pi_actions = set()
@@ -92,7 +93,7 @@ def make_postinstall_script(scripts_path, pkg_info, user_plist):
         postinstall = postinstall.replace(
             '_POSTINSTALL_REQUIREMENTS_', '\n'.join(pi_reqs))
         postinstall = postinstall.replace(
-            '_POSTINSTALL_ACTIONS_',      '\n'.join(pi_actions))
+            '_POSTINSTALL_ACTIONS_', '\n'.join(pi_actions))
         postinstall = postinstall.replace(
             '_POSTINSTALL_LIVE_ACTIONS_', '\n'.join(pi_live_actions))
         postinstall = postinstall.replace(
@@ -113,9 +114,10 @@ class PkgException(Exception):
     pass
 
 
-def generate(info, user_plist):
+def generate(info):
     '''Build a package'''
-    REQUIRED_KEYS = [u'name', u'version', u'pkgid', u'destination_path']
+    REQUIRED_KEYS = [
+        u'name', u'version', u'pkgid', u'destination_path', u'user_plist']
     for key in REQUIRED_KEYS:
         if key not in info:
             raise PkgException(u'Missing %s in pkg info!' % key)
@@ -136,7 +138,7 @@ def generate(info, user_plist):
         user_plist_path = os.path.join(
             pkg_root_path, 'private/var/db/dslocal/nodes/Default/users',
             user_plist_name)
-        plistutils.writePlist(user_plist, user_plist_path)
+        plistutils.writePlist(info[u'user_plist'], user_plist_path)
         os.chmod(user_plist_path, 0600)
         # Save kcpassword.
         if info.get('kcpassword'):
@@ -149,7 +151,7 @@ def generate(info, user_plist):
             os.chmod(kcpassword_path, 0600)
         # now the postinstall script
         scripts_path = os.path.join(tmp_path, 'scripts')
-        make_postinstall_script(scripts_path, info, user_plist)
+        make_postinstall_script(scripts_path, info)
         cmd = ['/usr/bin/pkgbuild',
                '--ownership', 'recommended',
                '--identifier', info[u'pkgid'],
