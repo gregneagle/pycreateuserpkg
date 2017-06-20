@@ -4,6 +4,9 @@
 # <tom@tomtaylor.co.uk>.
 # Perl version: http://www.brock-family.org/gavin/perl/kcpassword.html
 
+# This version:
+# https://gitlab.cates.io/packer/osx-vm-templates/blob/1790a91e95af3f24ca464a28297cb66d29e1b5be/scripts/support/set_kcpassword.py
+
 import sys
 import os
 
