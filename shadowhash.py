@@ -34,4 +34,4 @@ def generate(password):
                                      'iterations': iterations,
                                      'salt': buffer(salt)},
                        }
-    return plistutils.object_to_bplist(data)
+    return plistutils.write_plist(data, plist_format='binary')

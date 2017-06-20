@@ -117,11 +117,12 @@ class PkgException(Exception):
 def generate(info):
     '''Build a package'''
     REQUIRED_KEYS = [
-        u'name', u'version', u'pkgid', u'destination_path', u'user_plist']
+        u'version', u'pkgid', u'destination_path', u'user_plist']
     for key in REQUIRED_KEYS:
         if key not in info:
             raise PkgException(u'Missing %s in pkg info!' % key)
-    utf8_username = info[u'name'].encode('utf-8')
+    utf8_username = info.get(
+        u'name', info[u'user_plist'][u'name'][0]).encode('utf-8')
     # Create a package with the plist for our user and a shadow hash file.
     tmp_path = tempfile.mkdtemp()
     try:
@@ -138,7 +139,7 @@ def generate(info):
         user_plist_path = os.path.join(
             pkg_root_path, 'private/var/db/dslocal/nodes/Default/users',
             user_plist_name)
-        plistutils.writePlist(info[u'user_plist'], user_plist_path)
+        plistutils.write_plist(info[u'user_plist'], pathname=user_plist_path)
         os.chmod(user_plist_path, 0600)
         # Save kcpassword.
         if info.get('kcpassword'):
