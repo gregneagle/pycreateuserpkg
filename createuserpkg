@@ -1,0 +1,92 @@
+#!/usr/bin/python
+
+'''createuserpkg.py
+A tool for creating Apple installer packages that create/update user accounts
+on macOS. Much code borrowed and/or inpsired by Per Olofsson's CreateUserPkg'''
+
+import optparse
+import sys
+
+from locallibs import kcpassword
+from locallibs import plistutils
+from locallibs import shadowhash
+from locallibs import userplist
+from locallibs import userpkg
+
+
+def main():
+    '''Main'''
+    usage = "usage: %prog [options] /path/to/output.pkg"
+
+    parser = optparse.OptionParser(usage=usage)
+    user_options = optparse.OptionGroup(parser, 'User Options')
+    user_options.add_option('--name', '-n', help='User shortname. Required.')
+    user_options.add_option('--uid', '-u', help='User uid. Required.')
+    user_options.add_option('--password', '-p', help='User password. Required.')
+    user_options.add_option('--fullname', '-f',
+                            help='User full name. Optional.')
+    user_options.add_option('--gid', '-g', help='User gid. Optional.')
+    user_options.add_option('--home', '-H',
+                            help='Path to user home directory. Optional.')
+    user_options.add_option('--shell', '-s',
+                            help='User shell path. Optional.')
+    user_options.add_option('--admin', '-a', action='store_true',
+                            help='User account should be added to admin group.')
+    user_options.add_option('--autologin', '-A', action='store_true',
+                            help='User account should automatically login.')
+    parser.add_option_group(user_options)
+
+    pkg_options = optparse.OptionGroup(parser, 'Package Options')
+    pkg_options.add_option('--version', '-V',
+                           help='Package version number. Required.')
+    pkg_options.add_option('--identifier', '-i',
+                           help='Package identifier. Required.')
+    parser.add_option_group(pkg_options)
+
+    options, arguments = parser.parse_args()
+
+    # TO-DO: verify options and arguments
+    #required_options = ('name', 'uid', 'password', 'version', 'identifier')
+    #for option in required_options:
+    #    if not options.__dict__[option]:
+    #        parser.usage()
+    #        exit(-1)
+
+    if len(arguments) != 1:
+        print >> sys.stderr, "Must provide exactly one filename!"
+        parser.usage()
+        exit(-1)
+    filename = arguments[0]
+
+    # make user plist
+    user_data = {'name': options.name,
+                 'uid': options.uid,
+                 'ShadowHashData': shadowhash.generate(options.password)}
+    if options.fullname:
+        user_data['realname'] = options.fullname
+    if options.gid:
+        user_data['gid'] = options.gid
+    if options.home:
+        user_data['home'] = options.home
+    if options.shell:
+        user_data['shell'] = options.shell
+
+    user_plist = userplist.generate(user_data)
+    #print plistutils.write_plist(user_plist)
+
+    # set up package options/choices
+    pkg_data = {'version': options.version,
+                'pkgid': options.identifier,
+                'destination_path': filename,
+                'user_plist': user_plist}
+    if options.autologin:
+        pkg_data['kcpassword'] = kcpassword.generate(options.password)
+    if options.admin:
+        pkg_data['is_admin'] = True
+
+    # build the package
+    userpkg.generate(pkg_data)
+
+
+if __name__ == '__main__':
+    main()
