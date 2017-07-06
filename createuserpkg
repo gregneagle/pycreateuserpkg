@@ -19,29 +19,33 @@ def main():
     usage = "usage: %prog [options] /path/to/output.pkg"
 
     parser = optparse.OptionParser(usage=usage)
-    user_options = optparse.OptionGroup(parser, 'User Options')
-    user_options.add_option('--name', '-n', help='User shortname. Required.')
-    user_options.add_option('--uid', '-u', help='User uid. Required.')
-    user_options.add_option('--password', '-p', help='User password. Required.')
-    user_options.add_option('--fullname', '-f',
-                            help='User full name. Optional.')
-    user_options.add_option('--gid', '-g', help='User gid. Optional.')
-    user_options.add_option('--home', '-H',
-                            help='Path to user home directory. Optional.')
-    user_options.add_option('--shell', '-s',
-                            help='User shell path. Optional.')
-    user_options.add_option('--admin', '-a', action='store_true',
-                            help='User account should be added to admin group.')
-    user_options.add_option('--autologin', '-A', action='store_true',
-                            help='User account should automatically login.')
-    parser.add_option_group(user_options)
+    required_user_options = optparse.OptionGroup(parser, 'Required User Options')
+    required_user_options.add_option('--name', '-n', help='User shortname. REQUIRED.')
+    required_user_options.add_option('--uid', '-u', help='User uid. REQUIRED.')
+    required_user_options.add_option('--password', '-p', help='User password. REQUIRED.')
 
-    pkg_options = optparse.OptionGroup(parser, 'Package Options')
-    pkg_options.add_option('--version', '-V',
-                           help='Package version number. Required.')
-    pkg_options.add_option('--identifier', '-i',
-                           help='Package identifier. Required.')
-    parser.add_option_group(pkg_options)
+    required_package_options = optparse.OptionGroup(parser, 'Required Package Options')
+    required_package_options.add_option('--version', '-V',
+                           help='Package version number. REQUIRED.')
+    required_package_options.add_option('--identifier', '-i',
+                           help='Package identifier. REQUIRED.')
+
+    optional_user_options = optparse.OptionGroup(parser, 'Optional User Options')
+    optional_user_options.add_option('--fullname', '-f',
+                            help='User full name. Optional.')
+    optional_user_options.add_option('--gid', '-g', help='User gid. Optional.')
+    optional_user_options.add_option('--home', '-H',
+                            help='Path to user home directory. Optional.')
+    optional_user_options.add_option('--shell', '-s',
+                            help='User shell path. Optional.')
+    optional_user_options.add_option('--admin', '-a', action='store_true',
+                            help='User account should be added to admin group.')
+    optional_user_options.add_option('--autologin', '-A', action='store_true',
+                            help='User account should automatically login.')
+
+    parser.add_option_group(required_user_options)
+    parser.add_option_group(required_package_options)
+    parser.add_option_group(optional_user_options)
 
     options, arguments = parser.parse_args()
 
