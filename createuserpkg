@@ -46,11 +46,15 @@ def main():
     options, arguments = parser.parse_args()
 
     # TO-DO: verify options and arguments
-    #required_options = ('name', 'uid', 'password', 'version', 'identifier')
-    #for option in required_options:
-    #    if not options.__dict__[option]:
-    #        parser.print_usage()
-    #        exit(-1)
+    required_options = ('name', 'uid', 'password', 'version', 'identifier')
+    missing_required_options = False
+    for option in required_options:
+        if not hasattr(options, option) or getattr(options, option) == None:
+            print >> sys.stderr, 'Missing required option: %s' % option
+            missing_required_options = True
+    if missing_required_options:
+        parser.print_usage()
+        exit(-1)
 
     if len(arguments) != 1:
         print >> sys.stderr, "Must provide exactly one filename!"
