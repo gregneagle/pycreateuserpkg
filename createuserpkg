@@ -45,7 +45,7 @@ def main():
 
     options, arguments = parser.parse_args()
 
-    # TO-DO: verify options and arguments
+    # verify options and arguments
     required_options = ('name', 'uid', 'password', 'version', 'identifier')
     missing_required_options = False
     for option in required_options:
