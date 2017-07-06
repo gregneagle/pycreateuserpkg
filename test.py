@@ -1,8 +1,8 @@
-import kcpassword
-import plistutils
-import userpkg
-import userplist
-import shadowhash
+from locallibs import kcpassword
+from locallibs import plistutils
+from locallibs import userpkg
+from locallibs import userplist
+from locallibs import shadowhash
 
 from Foundation import NSDictionary
 
