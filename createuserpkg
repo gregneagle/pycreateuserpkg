@@ -53,12 +53,12 @@ def main():
             print >> sys.stderr, 'Missing required option: %s' % option
             missing_required_options = True
     if missing_required_options:
-        parser.print_usage()
+        parser.print_help()
         exit(-1)
 
     if len(arguments) != 1:
         print >> sys.stderr, "Must provide exactly one filename!"
-        parser.print_usage()
+        parser.print_help()
         exit(-1)
     filename = arguments[0]
 
