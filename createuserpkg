@@ -9,7 +9,6 @@ import sys
 import getpass
 
 from locallibs import kcpassword
-from locallibs import plistutils
 from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
@@ -20,31 +19,41 @@ def main():
     usage = "usage: %prog [options] /path/to/output.pkg"
 
     parser = optparse.OptionParser(usage=usage)
-    required_user_options = optparse.OptionGroup(parser, 'Required User Options')
-    required_user_options.add_option('--name', '-n', help='User shortname. REQUIRED.')
-    required_user_options.add_option('--uid', '-u', help='User uid. REQUIRED.')
+    required_user_options = optparse.OptionGroup(
+        parser, 'Required User Options')
+    required_user_options.add_option(
+        '--name', '-n', help='User shortname. REQUIRED.')
+    required_user_options.add_option(
+        '--uid', '-u', help='User uid. REQUIRED.')
 
-    required_package_options = optparse.OptionGroup(parser, 'Required Package Options')
-    required_package_options.add_option('--version', '-V',
-                           help='Package version number. REQUIRED.')
-    required_package_options.add_option('--identifier', '-i',
-                           help='Package identifier. REQUIRED.')
+    required_package_options = optparse.OptionGroup(
+        parser, 'Required Package Options')
+    required_package_options.add_option(
+        '--version', '-V', help='Package version number. REQUIRED.')
+    required_package_options.add_option(
+        '--identifier', '-i', help='Package identifier. REQUIRED.')
 
-    optional_user_options = optparse.OptionGroup(parser, 'Optional User Options')
-    optional_user_options.add_option('--password', '-p', help='User password.')
-    optional_user_options.add_option('--prompt', '-P', action='store_true',
-                            help='Prompt for user password.')
-    optional_user_options.add_option('--fullname', '-f',
-                            help='User full name. Optional.')
+    optional_user_options = optparse.OptionGroup(
+        parser, 'Optional User Options')
+    optional_user_options.add_option(
+        '--password', '-p',
+        help='User password. If this is not provided, interactively prompt for '
+        'password.')
+    optional_user_options.add_option(
+        '--fullname', '-f', help='User full name. Optional.')
     optional_user_options.add_option('--gid', '-g', help='User gid. Optional.')
-    optional_user_options.add_option('--home', '-H',
-                            help='Path to user home directory. Optional.')
-    optional_user_options.add_option('--shell', '-s',
-                            help='User shell path. Optional.')
-    optional_user_options.add_option('--admin', '-a', action='store_true',
-                            help='User account should be added to admin group.')
-    optional_user_options.add_option('--autologin', '-A', action='store_true',
-                            help='User account should automatically login.')
+    optional_user_options.add_option(
+        '--generateduid', '-G', help='GeneratedUID (UUID). Optional.')
+    optional_user_options.add_option(
+        '--home', '-H', help='Path to user home directory. Optional.')
+    optional_user_options.add_option(
+        '--shell', '-s', help='User shell path. Optional.')
+    optional_user_options.add_option(
+        '--admin', '-a', action='store_true',
+        help='User account should be added to admin group.')
+    optional_user_options.add_option(
+        '--autologin', '-A', action='store_true',
+        help='User account should automatically login.')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
@@ -56,14 +65,9 @@ def main():
     required_options = ('name', 'uid', 'version', 'identifier')
     missing_required_options = False
     for option in required_options:
-        if not hasattr(options, option) or getattr(options, option) == None:
+        if not hasattr(options, option) or getattr(options, option) is None:
             print >> sys.stderr, 'Missing required option: %s' % option
             missing_required_options = True
-    haspassword = getattr(options, 'password') is not None
-    hasprompt = options.prompt == True
-    if haspassword == hasprompt:
-        print >> sys.stderr, 'Must provide password or prompt option'
-        missing_required_options = True
     if missing_required_options:
         parser.print_help()
         exit(-1)
@@ -91,13 +95,15 @@ def main():
         user_data['realname'] = options.fullname
     if options.gid:
         user_data['gid'] = options.gid
+    if options.generateduid:
+        user_data['uuid'] = options.generateduid
     if options.home:
         user_data['home'] = options.home
     if options.shell:
         user_data['shell'] = options.shell
 
     user_plist = userplist.generate(user_data)
-    #print plistutils.write_plist(user_plist)
+
 
     # set up package options/choices
     pkg_data = {'version': options.version,
