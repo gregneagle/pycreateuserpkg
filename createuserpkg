@@ -54,6 +54,8 @@ def main():
     optional_user_options.add_option(
         '--autologin', '-A', action='store_true',
         help='User account should automatically login.')
+    optional_user_options.add_option('--hidden', action='store_true',
+                            help='User account should be hidden.')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
@@ -101,6 +103,8 @@ def main():
         user_data['home'] = options.home
     if options.shell:
         user_data['shell'] = options.shell
+    if options.hidden:
+        user_data['IsHidden'] = u'YES'
 
     user_plist = userplist.generate(user_data)
 
