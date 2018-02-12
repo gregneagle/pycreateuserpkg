@@ -1,4 +1,4 @@
-Work in progress for generating packages that create macOS user accounts on
+Tool for generating packages that create macOS user accounts on
 10.8-10.13
 
 ```
