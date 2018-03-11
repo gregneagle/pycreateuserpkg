@@ -27,7 +27,6 @@ from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
 
-
 def main():
     '''Main'''
     usage = "usage: %prog [options] /path/to/output.pkg"
@@ -36,16 +35,20 @@ def main():
     required_user_options = optparse.OptionGroup(
         parser, 'Required User Options')
     required_user_options.add_option(
-        '--name', '-n', help='User shortname. REQUIRED.')
+        '--name', '-n',
+        help='User shortname. REQUIRED.')
     required_user_options.add_option(
-        '--uid', '-u', help='User uid. REQUIRED.')
+        '--uid', '-u',
+        help='User uid. REQUIRED.')
 
     required_package_options = optparse.OptionGroup(
         parser, 'Required Package Options')
     required_package_options.add_option(
-        '--version', '-V', help='Package version number. REQUIRED.')
+        '--version', '-V',
+        help='Package version number. REQUIRED.')
     required_package_options.add_option(
-        '--identifier', '-i', help='Package identifier. REQUIRED.')
+        '--identifier', '-i',
+        help='Package identifier. REQUIRED.')
 
     optional_user_options = optparse.OptionGroup(
         parser, 'Optional User Options')
@@ -54,22 +57,35 @@ def main():
         help='User password. If this is not provided, interactively prompt for '
         'password.')
     optional_user_options.add_option(
-        '--fullname', '-f', help='User full name. Optional.')
-    optional_user_options.add_option('--gid', '-g', help='User gid. Optional.')
+        '--fullname', '-f',
+        help='User full name. Optional.')
     optional_user_options.add_option(
-        '--generateduid', '-G', help='GeneratedUID (UUID). Optional.')
+        '--gid', '-g',
+        help='User gid. Optional.')
     optional_user_options.add_option(
-        '--home', '-H', help='Path to user home directory. Optional.')
+        '--generateduid', '-G',
+        help='GeneratedUID (UUID). Optional.')
     optional_user_options.add_option(
-        '--shell', '-s', help='User shell path. Optional.')
+        '--home', '-H',
+        help='Path to user home directory. Optional.')
+    optional_user_options.add_option(
+        '--shell', '-s',
+        help='User shell path. Optional.')
     optional_user_options.add_option(
         '--admin', '-a', action='store_true',
         help='User account should be added to admin group.')
     optional_user_options.add_option(
         '--autologin', '-A', action='store_true',
         help='User account should automatically login.')
-    optional_user_options.add_option('--hidden', action='store_true',
-                            help='User account should be hidden.')
+    optional_user_options.add_option(
+        '--hidden', action='store_true',
+        help='User account should be hidden.')
+    optional_user_options.add_option(
+        '--picture', '-P',
+        help='Change user picture.')
+    optional_user_options.add_option(
+        '--createhomedir', '-c', action='store_true',
+        help='Create and populate home directories on the local computer.')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
@@ -119,7 +135,10 @@ def main():
         user_data['shell'] = options.shell
     if options.hidden:
         user_data['IsHidden'] = u'YES'
-
+    if options.picture:
+        from locallibs import imageutil
+        user_data['image_data'] = imageutil.generate(options.picture)
+        user_data['image_path'] = options.picture
     user_plist = userplist.generate(user_data)
 
 
@@ -132,6 +151,8 @@ def main():
         pkg_data['kcpassword'] = kcpassword.generate(password)
     if options.admin:
         pkg_data['is_admin'] = True
+    if options.createhomedir:
+        pkg_data['createhomedir'] = True
 
     # build the package
     userpkg.generate(pkg_data)
