@@ -33,7 +33,6 @@ if [ "$3" == "/" ]; then
     # we're operating on the boot volume
 _POSTINSTALL_LIVE_ACTIONS_
 fi
-_POSTINSTALL_CREATEHOMEDIR_
 exit 0
 """
 
@@ -90,7 +89,7 @@ PI_LIVE_KILLDS = """
 """
 
 PI_CREATEHOMEDIR = """
-/usr/sbin/createhomedir -c
+    /usr/sbin/createhomedir -c
 """
 
 def make_postinstall_script(scripts_path, pkg_info):
@@ -101,7 +100,6 @@ def make_postinstall_script(scripts_path, pkg_info):
         pi_reqs = set()
         pi_actions = set()
         pi_live_actions = set()
-        pi_createhomedir = set()
         pi_live_actions.add(PI_LIVE_KILLDS)
         if pkg_info.get('is_admin'):
             pi_actions.add(PI_ADD_ADMIN_GROUPS)
@@ -109,7 +107,7 @@ def make_postinstall_script(scripts_path, pkg_info):
         if pkg_info.get('kcpassword'):
             pi_actions.add(PI_ENABLE_AUTOLOGIN)
         if pkg_info.get('createhomedir'):
-            pi_createhomedir.add(PI_CREATEHOMEDIR)
+            pi_live_actions.add(PI_CREATEHOMEDIR)
         postinstall = POSTINSTALL_TEMPLATE
         postinstall = postinstall.replace(
             '_POSTINSTALL_REQUIREMENTS_', '\n'.join(pi_reqs))
@@ -117,8 +115,6 @@ def make_postinstall_script(scripts_path, pkg_info):
             '_POSTINSTALL_ACTIONS_', '\n'.join(pi_actions))
         postinstall = postinstall.replace(
             '_POSTINSTALL_LIVE_ACTIONS_', '\n'.join(pi_live_actions))
-        postinstall = postinstall.replace(
-            '_POSTINSTALL_CREATEHOMEDIR_', '\n'.join(pi_createhomedir))
         postinstall = postinstall.replace(
             '_USERNAME_', user_plist[u'name'][0].encode('utf-8'))
         postinstall = postinstall.replace(

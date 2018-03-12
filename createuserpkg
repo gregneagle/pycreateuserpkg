@@ -26,6 +26,7 @@ from locallibs import kcpassword
 from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
+from locallibs import imageutil
 
 def main():
     '''Main'''
@@ -136,7 +137,6 @@ def main():
     if options.hidden:
         user_data['IsHidden'] = u'YES'
     if options.picture:
-        from locallibs import imageutil
         user_data['image_data'] = imageutil.generate(options.picture)
         user_data['image_path'] = options.picture
     user_plist = userplist.generate(user_data)

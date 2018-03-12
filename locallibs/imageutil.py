@@ -36,13 +36,18 @@ def generate(image_path):
         temp_image = os.path.join(os.path.sep, 'private/var/tmp',
                                   os.path.splitext(os.path.basename(image_path))[0] + '.jpg')
         # convert image_path to jpeg with 72 dpi and max. width/height 512 px
-        cmd = ('''/usr/bin/sips -s format jpeg "{0}" '''
-               '''-s formatOptions high -s dpiHeight 72 -s dpiWidth 72 --resampleHeightWidthMax 512 '''
-               '''--out "{1}"''').format(
-            image_path,
-            temp_image)
+        cmd = ['/usr/bin/sips',
+               '-s', 'format', 'jpeg', image_path,
+               '-s', 'formatOptions', 'high',
+               '-s', 'dpiHeight', '72',
+               '-s', 'dpiWidth', '72',
+               '--resampleHeightWidthMax', '512',
+               '--out', temp_image
+              ]
         try:
-            subprocess.call(cmd, shell=True)
+            retcode = subprocess.call(cmd)
+            if retcode:
+                raise ImageUtilException(u'sips command failed')
             # check if temporary image exists and is not blank
             if is_non_zero_file(temp_image):
                 with open(temp_image, 'rb') as image_file:
