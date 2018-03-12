@@ -86,7 +86,8 @@ def main():
         help='Change user picture.')
     optional_user_options.add_option(
         '--createhomedir', '-c', action='store_true',
-        help='Create and populate home directories on the local computer.')
+        help='Create and populate home directories on the local computer '
+            '(ATTENTION: works only when installing on the boot volume).')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
