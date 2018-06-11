@@ -31,7 +31,8 @@ PlistArrayAdd() {
 }
 
 # set our current directory (the one this script is in)
-MYDIR=$(dirname $0)
+# dirname is not available in recovery, so we use this cryptic shell-ism
+MYDIR=${0%/*}
 
 # find and source our config file to set our variables
 source "$MYDIR/config"
@@ -48,8 +49,8 @@ if [ "$3" == "/" ]; then
         /usr/sbin/dseditgroup -o edit -d "$USERNAME" -t user admin
     fi
     if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
-        /bin/cp "$MYDIR/kcpasswd" /private/etc/
-        /bin/chmod 600 /private/etc/kcpasswd
+        /bin/cp "$MYDIR/kcpassword" /private/etc/
+        /bin/chmod 600 /private/etc/kcpassword
         # work around path issue with 'defaults'
         /usr/bin/defaults write "/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
     fi
@@ -57,8 +58,8 @@ else
     # we're installing to non-boot volume; probably from Recovery-like or
     # AutoDMG environment
     # we can just copy the user plist into place
-    /bin/cp "$MYDIR/$USERNAME.plist" "$3/var/db/dslocal/nodes/Default/users/"
-    /bin/chmod 600 "$3/var/db/dslocal/nodes/Default/users/$USERNAME.plist"
+    /bin/cp "$MYDIR/$USERNAME.plist" "$3/private/var/db/dslocal/nodes/Default/users/"
+    /bin/chmod 600 "$3/private/var/db/dslocal/nodes/Default/users/$USERNAME.plist"
     if [ "$USER_IS_ADMIN" == "True" ]; then
         # can't use dseditgroup in this environment, so we wrap PlistBuddy
         PlistArrayAdd "$3/private/var/db/dslocal/nodes/Default/groups/admin.plist" users "$USERNAME" && \
@@ -66,8 +67,8 @@ else
     fi
     if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
         /bin/mkdir -m 755 -p "$3/private/etc"
-        /bin/cp "$MYDIR/kcpasswd" "$3/private/etc/"
-        /bin/chmod 600 "$3/private/etc/passwd"
+        /bin/cp "$MYDIR/kcpassword" "$3/private/etc/"
+        /bin/chmod 600 "$3/private/etc/kcpassword"
         /usr/bin/defaults write "$3/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
     fi
 fi
