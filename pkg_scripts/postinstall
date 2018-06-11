@@ -38,7 +38,7 @@ source "$MYDIR/config"
 
 if [ "$3" == "/" ]; then
     # create user using OpenDirectory APIs
-    "$MYDIR"/create_user.py "$USERNAME"
+    "$MYDIR"/create_user.py "$MYDIR/$USERNAME.plist"
     # we're operating on the boot volume
     if [ "$USER_IS_ADMIN" == "True" ]; then
         # add $USERNAME to admin group

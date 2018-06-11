@@ -118,26 +118,28 @@ def read_plist(filepath):
 def main():
     """Our main routine"""
     try:
-        username = sys.argv[1]
+        user_plist = sys.argv[1]
     except IndexError, err:
-        print >> sys.stderr, "Missing a username to add!"
+        print >> sys.stderr, "Missing path to user plist!"
         exit(-1)
-    this_dir = os.path.dirname(sys.argv[0])
-    user_plist = "%s.plist" % username
-    plist_path = os.path.join(this_dir, user_plist)
-    if not os.path.exists(plist_path):
-        print >> sys.stderr, "%s doesn't exist" % plist_path
+    if not os.path.exists(user_plist):
+        print >> sys.stderr, "%s doesn't exist!" % user_plist
         exit(-1)
     try:
-        userdata = read_plist(plist_path)
-    except FoundationPlistException, err:
-        print >> sys.stderr, err
+        userdata = read_plist(user_plist)
+    except FoundationPlistException as err:
+        print >> sys.stderr, "Could not read plist: %s" % err
+        exit(-1)
+    try:
+        username = userdata["name"][0]
+    except (KeyError, IndexError) as err:
+        print >> sys.stderr, "Could not get username from plist: %s" % err
         exit(-1)
     record = get_user_record(username)
     if not record:
         record = create_user_record(username)
     if not record:
-        print >> sys.stderr, "Failed to create user record"
+        print >> sys.stderr, "Failed to create user record!"
         exit(-1)
     success = set_attributes_for_user(userdata, record)
     if not success:
