@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 
-import plistutils
+from . import plistutils
 
 
 class PkgException(Exception):
@@ -45,9 +45,9 @@ ENABLE_AUTOLOGIN=%s
 """ % (username, uuid, user_is_admin, enable_autologin)
     config_path = os.path.join(scripts_path, "config")
     try:
-        f = open(config_path, 'w')
-        f.write(config_content)
-        f.close()
+        fileref = open(config_path, 'w')
+        fileref.write(config_content)
+        fileref.close()
         os.chmod(config_path, 0755)
     except (OSError, IOError), err:
         raise PkgException(unicode(err))
@@ -55,9 +55,9 @@ ENABLE_AUTOLOGIN=%s
 
 def generate(info):
     '''Build a package'''
-    REQUIRED_KEYS = [
+    required_keys = [
         u'version', u'pkgid', u'destination_path', u'user_plist']
-    for key in REQUIRED_KEYS:
+    for key in required_keys:
         if key not in info:
             raise PkgException(u'Missing %s in pkg info!' % key)
     utf8_username = info.get(
@@ -82,9 +82,9 @@ def generate(info):
         # Save kcpassword.
         if info.get('kcpassword'):
             kcpassword_path = os.path.join(scripts_path, 'kcpassword')
-            f = open(kcpassword_path, 'w')
-            f.write(info.get('kcpassword'))
-            f.close()
+            fileref = open(kcpassword_path, 'w')
+            fileref.write(info.get('kcpassword'))
+            fileref.close()
             os.chmod(kcpassword_path, 0600)
         # now the config file
         make_config_file(scripts_path, info)
