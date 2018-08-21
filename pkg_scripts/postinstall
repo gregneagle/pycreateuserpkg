@@ -1,6 +1,10 @@
 #!/bin/bash
 #
 # postinstall for local account install
+#
+# PlistArrayAdd() by Per Olofsson (aka MagerValp); parts of the rest of the
+# script also indebited to work by Per
+
 
 PlistArrayAdd() {
     # Add $value to $array_name in $plist_path, creating if necessary
@@ -30,8 +34,9 @@ PlistArrayAdd() {
     /usr/libexec/PlistBuddy -c "Add :$array_name: string \"$value\"" "$plist_path"
 }
 
+
 # set our current directory (the one this script is in)
-# dirname is not available in recovery, so we use this cryptic shell-ism
+# dirname is not available in Recovery, so we use this cryptic shell-ism
 MYDIR=${0%/*}
 
 # find and source our config file to set our variables
@@ -49,26 +54,29 @@ if [ "$3" == "/" ]; then
         /usr/sbin/dseditgroup -o edit -d "$USERNAME" -t user admin
     fi
     if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
+        # copy kcpassword into place
         /bin/cp "$MYDIR/kcpassword" /private/etc/
         /bin/chmod 600 /private/etc/kcpassword
-        # work around path issue with 'defaults'
+        # set AutoLogin preference, working around path issue with 'defaults'
         /usr/bin/defaults write "/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
     fi
 else
     # we're installing to non-boot volume; probably from Recovery-like or
-    # AutoDMG environment
-    # we can just copy the user plist into place
+    # AutoDMG environment - so we can just copy the user plist into place
     /bin/cp "$MYDIR/$USERNAME.plist" "$3/private/var/db/dslocal/nodes/Default/users/"
     /bin/chmod 600 "$3/private/var/db/dslocal/nodes/Default/users/$USERNAME.plist"
     if [ "$USER_IS_ADMIN" == "True" ]; then
-        # can't use dseditgroup in this environment, so we wrap PlistBuddy
+        # can't use dseditgroup in this environment, so we wrap PlistBuddy to
+        # add $USERNAME to the admin group by directly editing admin.plist
         PlistArrayAdd "$3/private/var/db/dslocal/nodes/Default/groups/admin.plist" users "$USERNAME" && \
             PlistArrayAdd "$3/private/var/db/dslocal/nodes/Default/groups/admin.plist" groupmembers "$UUID"
     fi
     if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
+        # copy kcpassword into place
         /bin/mkdir -m 755 -p "$3/private/etc"
         /bin/cp "$MYDIR/kcpassword" "$3/private/etc/"
         /bin/chmod 600 "$3/private/etc/kcpassword"
+        # set AutoLogin preference
         /usr/bin/defaults write "$3/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
     fi
 fi

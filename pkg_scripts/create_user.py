@@ -29,6 +29,11 @@ from OpenDirectory import ODSession, ODNode, kODRecordTypeUsers
 # pylint: enable=E0611
 
 
+def major_darwin_version():
+    '''Returns an integer with the current major Darwin version'''
+    return int(os.uname()[2].split('.')[0])
+
+
 def local_node():
     """Returns local DS node"""
     my_session = ODSession.defaultSession()
@@ -74,16 +79,19 @@ def create_user_record(username):
     return record
 
 
-def set_attributes_for_user(attrs, user_record):
+def set_attributes_for_user(attrs, user_record, attrs_to_skip=None):
     """Sets user record attributes"""
+    if attrs_to_skip is None:
+        attrs_to_skip = []
     if user_record:
-        for key, value in attrs.items():
-            success, err = user_record.setValue_forAttribute_error_(
-                value, key, None
-            )
-            if not success:
-                print >> sys.stderr, err
-                return False
+        for attr, value in attrs.items():
+            if attr not in attrs_to_skip:
+                success, err = user_record.setValue_forAttribute_error_(
+                    value, attr, None
+                )
+                if not success:
+                    print >> sys.stderr, err
+                    return False
         return True
     print sys.stderr, "User record was nil"
     return False
@@ -118,6 +126,7 @@ def read_plist(filepath):
 def main():
     """Our main routine"""
     try:
+        # get path to user plist from first argument
         user_plist = sys.argv[1]
     except IndexError, err:
         print >> sys.stderr, "Missing path to user plist!"
@@ -126,22 +135,34 @@ def main():
         print >> sys.stderr, "%s doesn't exist!" % user_plist
         exit(-1)
     try:
+        # read the user plist
         userdata = read_plist(user_plist)
     except FoundationPlistException as err:
         print >> sys.stderr, "Could not read plist: %s" % err
         exit(-1)
     try:
+        # extract the username from the user plist data
         username = userdata["name"][0]
     except (KeyError, IndexError) as err:
         print >> sys.stderr, "Could not get username from plist: %s" % err
         exit(-1)
+    # find a local user record for username
     record = get_user_record(username)
+    attrs_to_skip = None
     if not record:
+        # create a new local user named username
         record = create_user_record(username)
-    if not record:
-        print >> sys.stderr, "Failed to create user record!"
-        exit(-1)
-    success = set_attributes_for_user(userdata, record)
+        if not record:
+            print >> sys.stderr, "Failed to create user record!"
+            exit(-1)
+    else:
+        # existing user record we're updating
+        if major_darwin_version() >= 18:
+            # Mojave prevents us from updating these attributes without
+            # user approval
+            attrs_to_skip = ['uid', 'home']
+    success = set_attributes_for_user(
+        userdata, record, attrs_to_skip=attrs_to_skip)
     if not success:
         exit(-1)
 
