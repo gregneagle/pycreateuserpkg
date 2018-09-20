@@ -16,10 +16,10 @@
 
 import hashlib
 
-import arc4random
-import pbkdf2
+from . import arc4random
+from . import pbkdf2
 
-import plistutils
+from . import plistutils
 
 
 def make_salt(saltlen):
@@ -44,8 +44,11 @@ def generate(password):
             password, salt, iterations=iterations, keylen=keylen,
             hashfunc=hashlib.sha512)
 
-    data = {'SALTED-SHA512-PBKDF2': {'entropy': buffer(entropy),
-                                     'iterations': iterations,
-                                     'salt': buffer(salt)},
-                       }
+    data = {
+        'SALTED-SHA512-PBKDF2': {
+            'entropy': buffer(entropy),
+            'iterations': iterations,
+            'salt': buffer(salt)
+        },
+    }
     return plistutils.write_plist(data, plist_format='binary')

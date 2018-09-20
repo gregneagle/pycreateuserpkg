@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# postinstall for local account install
+#
+# PlistArrayAdd() by Per Olofsson (aka MagerValp); parts of the rest of the
+# script also indebited to work by Per
+
+
+PlistArrayAdd() {
+    # Add $value to $array_name in $plist_path, creating if necessary
+    local plist_path="$1"
+    local array_name="$2"
+    local value="$3"
+    local old_values
+    local item
+    
+    old_values=$(/usr/libexec/PlistBuddy -c "Print :$array_name" "$plist_path" 2>/dev/null)
+    if [[ $? == 1 ]]; then
+        # Array doesn't exist, create it
+        /usr/libexec/PlistBuddy -c "Add :$array_name array" "$plist_path"
+    else
+        # Array already exists, check if array already contains value
+        IFS=$'\012' 
+        for item in $old_values; do
+            unset IFS
+            if [[ "$item" =~ ^\ *$value$ ]]; then
+                # Array already contains value
+                return 0
+            fi
+        done
+        unset IFS
+    fi
+    # Add item to array
+    /usr/libexec/PlistBuddy -c "Add :$array_name: string \"$value\"" "$plist_path"
+}
+
+
+# set our current directory (the one this script is in)
+# dirname is not available in Recovery, so we use this cryptic shell-ism
+MYDIR=${0%/*}
+
+# find and source our config file to set our variables
+source "$MYDIR/config"
+
+if [ "$3" == "/" ]; then
+    # create user using OpenDirectory APIs
+    "$MYDIR"/create_user.py "$MYDIR/$USERNAME.plist"
+    # we're operating on the boot volume
+    if [ "$USER_IS_ADMIN" == "True" ]; then
+        # add $USERNAME to admin group
+        /usr/sbin/dseditgroup -o edit -a "$USERNAME" -t user admin
+    else
+        # remove $USERNAME from admin group
+        /usr/sbin/dseditgroup -o edit -d "$USERNAME" -t user admin
+    fi
+    if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
+        # copy kcpassword into place
+        /bin/cp "$MYDIR/kcpassword" /private/etc/
+        /bin/chmod 600 /private/etc/kcpassword
+        # set AutoLogin preference, working around path issue with 'defaults'
+        /usr/bin/defaults write "/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
+    fi
+else
+    # we're installing to non-boot volume; probably from Recovery-like or
+    # AutoDMG environment - so we can just copy the user plist into place
+    /bin/cp "$MYDIR/$USERNAME.plist" "$3/private/var/db/dslocal/nodes/Default/users/"
+    /bin/chmod 600 "$3/private/var/db/dslocal/nodes/Default/users/$USERNAME.plist"
+    if [ "$USER_IS_ADMIN" == "True" ]; then
+        # can't use dseditgroup in this environment, so we wrap PlistBuddy to
+        # add $USERNAME to the admin group by directly editing admin.plist
+        PlistArrayAdd "$3/private/var/db/dslocal/nodes/Default/groups/admin.plist" users "$USERNAME" && \
+            PlistArrayAdd "$3/private/var/db/dslocal/nodes/Default/groups/admin.plist" groupmembers "$UUID"
+    fi
+    if [ "$ENABLE_AUTOLOGIN" == "True" ]; then
+        # copy kcpassword into place
+        /bin/mkdir -m 755 -p "$3/private/etc"
+        /bin/cp "$MYDIR/kcpassword" "$3/private/etc/"
+        /bin/chmod 600 "$3/private/etc/kcpassword"
+        # set AutoLogin preference
+        /usr/bin/defaults write "$3/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
+    fi
+fi
+exit 0

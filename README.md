@@ -1,8 +1,8 @@
 Tool for generating packages that create macOS user accounts on
-10.8-10.13
+10.8-10.14
 
-Packages made with this branch can fail to install under the current Mojave betas.  
-For 10.14, there's a branch you can test here: https://github.com/gregneagle/pycreateuserpkg/tree/od_api
+Note: in 10.14 when updating an existing account, the following attributes will _NOT_ be updated: `uid` and `home`. This is due to new restrictions in Mojave.
+
 
 ```
 $ ./createuserpkg --help
