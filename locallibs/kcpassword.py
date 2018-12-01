@@ -31,6 +31,9 @@ def generate(passwd):
             passwd[j] = passwd[j] ^ key[ki]
             ki += 1
 
+    if (len(passwd) == 0):
+        passwd = [125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
     passwd = [chr(x) for x in passwd]
     return "".join(passwd)
 
