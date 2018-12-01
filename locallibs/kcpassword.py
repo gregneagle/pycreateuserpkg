@@ -27,7 +27,6 @@ def generate(passwd):
 
     for n in range(0, len(passwd), len(key)):
         ki = 0
-
         for j in range(n, min(n+len(key), len(passwd))):
             passwd[j] = passwd[j] ^ key[ki]
             ki += 1
@@ -36,6 +35,5 @@ def generate(passwd):
         passwd = [125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     passwd = [chr(x) for x in passwd]
-
     return "".join(passwd)
 
