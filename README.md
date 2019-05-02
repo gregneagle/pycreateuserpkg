@@ -11,12 +11,20 @@ Usage: createuserpkg [options] /path/to/output.pkg
 Options:
   -h, --help            show this help message and exit
 
-  User Options:
+  Required User Options:
     -n NAME, --name=NAME
-                        User shortname. Required.
-    -u UID, --uid=UID   User uid. Required.
+                        User shortname. REQUIRED.
+    -u UID, --uid=UID   User uid. REQUIRED.
     -p PASSWORD, --password=PASSWORD
-                        User password. Required.
+                        User password. REQUIRED.
+
+  Required Package Options:
+    -V VERSION, --version=VERSION
+                        Package version number. REQUIRED.
+    -i IDENTIFIER, --identifier=IDENTIFIER
+                        Package identifier. REQUIRED.
+
+  Optional User Options:
     -f FULLNAME, --fullname=FULLNAME
                         User full name. Optional.
     -g GID, --gid=GID   User gid. Optional.
@@ -27,10 +35,5 @@ Options:
     -a, --admin         User account should be added to admin group.
     -A, --autologin     User account should automatically login.
 
-  Package Options:
-    -V VERSION, --version=VERSION
-                        Package version number. Required.
-    -i IDENTIFIER, --identifier=IDENTIFIER
-                        Package identifier. Required.
 
 ```
