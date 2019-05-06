@@ -53,7 +53,7 @@ ENABLE_AUTOLOGIN=%s
         raise PkgException(unicode(err))
 
 
-def generate(info):
+def generate(info, createuserpkg_dir):
     '''Build a package'''
     required_keys = [
         u'version', u'pkgid', u'destination_path', u'user_plist']
@@ -90,7 +90,6 @@ def generate(info):
         make_config_file(scripts_path, info)
         # now copy postinstall and create_user.py to scripts dir
         # pkg_scripts should be in the same directory as createuserpkg
-        createuserpkg_dir = os.path.dirname(sys.argv[0])
         pkg_scripts_dir = os.path.join(createuserpkg_dir, 'pkg_scripts')
         for script in ['create_user.py', 'postinstall']:
             source = os.path.join(pkg_scripts_dir, script)

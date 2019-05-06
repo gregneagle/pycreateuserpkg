@@ -21,6 +21,7 @@ on macOS. Much code borrowed and/or inpsired by Per Olofsson's CreateUserPkg'''
 import optparse
 import sys
 import getpass
+import os
 
 from locallibs import kcpassword
 from locallibs import shadowhash
@@ -133,8 +134,10 @@ def main():
     if options.admin:
         pkg_data['is_admin'] = True
 
+    createuserpkg_dir = os.path.dirname(os.path.realpath(__file__))
+
     # build the package
-    userpkg.generate(pkg_data)
+    userpkg.generate(pkg_data, createuserpkg_dir)
 
 
 if __name__ == '__main__':
