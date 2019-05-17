@@ -15,8 +15,6 @@ Options:
     -n NAME, --name=NAME
                         User shortname. REQUIRED.
     -u UID, --uid=UID   User uid. REQUIRED.
-    -p PASSWORD, --password=PASSWORD
-                        User password. REQUIRED.
 
   Required Package Options:
     -V VERSION, --version=VERSION
@@ -25,15 +23,31 @@ Options:
                         Package identifier. REQUIRED.
 
   Optional User Options:
+    -p PASSWORD, --password=PASSWORD
+                        User password. If this is not provided, interactively
+                        prompt for password.
     -f FULLNAME, --fullname=FULLNAME
                         User full name. Optional.
     -g GID, --gid=GID   User gid. Optional.
+    -G GENERATEDUID, --generateduid=GENERATEDUID
+                        GeneratedUID (UUID). Optional.
     -H HOME, --home=HOME
                         Path to user home directory. Optional.
     -s SHELL, --shell=SHELL
                         User shell path. Optional.
     -a, --admin         User account should be added to admin group.
     -A, --autologin     User account should automatically login.
-
+    --hidden            User account should be hidden.
 
 ```
+
+Example:
+
+Making a local admin pkg with shortname "localadmin" and uid 501:
+
+```% ./createuserpkg -n localadmin -u 501 -a -i com.foo.localadminpkg -V 1.0 localadmin.pkg
+Password: ********
+Password (again): ********
+pkgbuild: Inferring bundle components from contents of /var/folders/tc/sd4_mtvj14jdy7cg21m2gmcw000495/T/tmpj0FQ8n/create_user
+pkgbuild: Adding top-level postinstall script
+pkgbuild: Wrote package to localadmin.pkg```
