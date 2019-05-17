@@ -45,7 +45,8 @@ Example:
 
 Making a local admin pkg with shortname "localadmin" and uid 501:
 
-```% ./createuserpkg -n localadmin -u 501 -a -i com.foo.localadminpkg -V 1.0 localadmin.pkg
+```
+$ ./createuserpkg -n localadmin -u 501 -a -i com.foo.localadminpkg -V 1.0 localadmin.pkg
 Password: ********
 Password (again): ********
 pkgbuild: Inferring bundle components from contents of /var/folders/tc/sd4_mtvj14jdy7cg21m2gmcw000495/T/tmpj0FQ8n/create_user
