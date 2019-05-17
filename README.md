@@ -41,7 +41,7 @@ Options:
 
 ```
 
-Example:
+#### Example:
 
 Making a local admin pkg with shortname "localadmin" and uid 501:
 
@@ -51,4 +51,5 @@ Password: ********
 Password (again): ********
 pkgbuild: Inferring bundle components from contents of /var/folders/tc/sd4_mtvj14jdy7cg21m2gmcw000495/T/tmpj0FQ8n/create_user
 pkgbuild: Adding top-level postinstall script
-pkgbuild: Wrote package to localadmin.pkg```
+pkgbuild: Wrote package to localadmin.pkg
+```
