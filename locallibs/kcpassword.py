@@ -27,7 +27,6 @@ def generate(passwd):
     r = len(passwd) % (block_size)
     if (r > 0):
         passwd = passwd + [0] * (block_size - r)
-    print passwd
     for n in range(0, len(passwd), len(key)):
         ki = 0
         for j in range(n, min(n+len(key), len(passwd))):
