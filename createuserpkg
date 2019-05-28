@@ -60,6 +60,9 @@ def main():
     optional_user_options.add_option(
         '--generateduid', '-G', help='GeneratedUID (UUID). Optional.')
     optional_user_options.add_option(
+        '--hint', help='User password hint. Optional.')
+
+    optional_user_options.add_option(
         '--home', '-H', help='Path to user home directory. Optional.')
     optional_user_options.add_option(
         '--shell', '-s', help='User shell path. Optional.')
@@ -120,6 +123,8 @@ def main():
         user_data['shell'] = options.shell
     if options.hidden:
         user_data['IsHidden'] = u'YES'
+    if options.hint:
+        user_data['hint'] = options.hint
 
     user_plist = userplist.generate(user_data)
 

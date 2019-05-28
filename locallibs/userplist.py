@@ -51,4 +51,6 @@ def generate(user_dict):
         user[u'jpegphoto'] = [user_dict[u'image_data']]
     if u'IsHidden' in user_dict:
         user[u'IsHidden'] = [user_dict[u'IsHidden']]
+    if u'hint' in user_dict:
+        user[u'hint'] = [user_dict[u'hint']]
     return user
