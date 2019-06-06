@@ -55,6 +55,10 @@ def main():
         help='User password. If this is not provided, interactively prompt for '
         'password.')
     optional_user_options.add_option(
+        '--key', '-k', default=False,
+        help='User ssh public key.  If provided stored in ~/.ssh/authorized_keys '
+        'implies --createhome and therefore works only when installing to "/". Optional.')
+    optional_user_options.add_option(
         '--fullname', '-f', help='User full name. Optional.')
     optional_user_options.add_option('--gid', '-g', help='User gid. Optional.')
     optional_user_options.add_option(
@@ -64,6 +68,10 @@ def main():
 
     optional_user_options.add_option(
         '--home', '-H', help='Path to user home directory. Optional.')
+    optional_user_options.add_option(
+        '--createhome', '-c', default=False,
+        action='store_true', help='Create the user home directory. '
+        'Works only when installing to "/". Optional.')
     optional_user_options.add_option(
         '--shell', '-s', help='User shell path. Optional.')
     optional_user_options.add_option(
@@ -133,7 +141,9 @@ def main():
     pkg_data = {'version': options.version,
                 'pkgid': options.identifier,
                 'destination_path': filename,
-                'user_plist': user_plist}
+                'user_plist': user_plist,
+                'createhome': options.createhome,
+                'key': options.key}
     if options.autologin:
         pkg_data['kcpassword'] = kcpassword.generate(password)
     if options.admin:
