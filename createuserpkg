@@ -127,8 +127,8 @@ def main():
         user_data['IsHidden'] = u'YES'
     if options.hint:
         user_data['hint'] = options.hint
-    if options.image:
-        user_data['image_path'] = options.image
+    if options.imagepath:
+        user_data['image_path'] = options.imagepath
         
     user_plist = userplist.generate(user_data)
 
