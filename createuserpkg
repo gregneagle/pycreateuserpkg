@@ -74,7 +74,9 @@ def main():
         help='User account should automatically login.')
     optional_user_options.add_option('--hidden', action='store_true',
                             help='User account should be hidden.')
-
+    optional_user_options.add_option('--image', '-I',
+    help='Path to file to be used as user image. This is up to you to ensure it exists before the pkg is run. Optional.')
+    
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
     parser.add_option_group(optional_user_options)
@@ -125,7 +127,9 @@ def main():
         user_data['IsHidden'] = u'YES'
     if options.hint:
         user_data['hint'] = options.hint
-
+    if options.image:
+        user_data['image_path'] = options.image
+        
     user_plist = userplist.generate(user_data)
 
 
