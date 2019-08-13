@@ -1,10 +1,11 @@
 Tool for generating packages that create macOS user accounts on
-10.8-10.14
+10.8-10.15
 
 #### NEW 13-Aug-2019:
-The create_user.py tool in the Scripts directory of the expanded package has been replaced by a compiled createuser tool written in Objective-C. (See the createuser directory for the source). This eliminates the dependency on Apple Python for the package itself to work on the current boot volume,
+The create_user.py tool in the Scripts directory of the expanded package has been replaced by a compiled createuser tool written in Objective-C. (See the createuser directory for the source). This eliminates the dependency on Apple Python for the package itself to work on the current boot volume.
 
-Note: in 10.14 when updating an existing account, the following attributes will _NOT_ be updated: `uid` and `home`. This is due to new restrictions in Mojave.
+#### Note:
+in 10.14 when updating an existing account, the following attributes will _NOT_ be updated: `uid` and `home`. This is due to new restrictions in Mojave.
 
 
 ```
