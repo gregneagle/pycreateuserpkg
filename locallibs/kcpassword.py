@@ -18,13 +18,15 @@ def generate(passwd):
     # 0x7D 0x89 0x52 0x23 0xD2 0xBC 0xDD 0xEA 0xA3 0xB9 0x1F
     key = [125,137,82,35,210,188,221,234,163,185,31]
     key_len = len(key)
+    block_size=key_len+1
+    
+    #convert to array add zero to end of password
+    passwd = [ord(x) for x in list(passwd)] + [0]
 
-    passwd = [ord(x) for x in list(passwd)]
-    # pad passwd length out to an even multiple of key length
-    r = len(passwd) % key_len
+    # pad passwd length out to an even multiple of block_size
+    r = len(passwd) % (block_size)
     if (r > 0):
-        passwd = passwd + [0] * (key_len - r)
-
+        passwd = passwd + [0] * (block_size - r)
     for n in range(0, len(passwd), len(key)):
         ki = 0
         for j in range(n, min(n+len(key), len(passwd))):
