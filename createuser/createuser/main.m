@@ -110,7 +110,7 @@ id readPlist(NSString * filename) {
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         if (argc != 2) {
-            fprintf(stderr, "Error: %s takes exactly one argument: a path to an Open Directory configuration plist to import.\n", basename((char *)argv[0]));
+            fprintf(stderr, "Error: %s takes exactly one argument: a path to an Open Directory user plist to import.\n", basename((char *)argv[0]));
             return -1;
         }
         // attempt to read in the passed-in file
