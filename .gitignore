@@ -4,3 +4,6 @@
 # don't track .pyc files
 *.pyc
 
+# don't track packages that get built here
+*.pkg
+
