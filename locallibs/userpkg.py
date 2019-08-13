@@ -91,7 +91,7 @@ def generate(info, createuserpkg_dir):
         # now copy postinstall and create_user.py to scripts dir
         # pkg_scripts should be in the same directory as createuserpkg
         pkg_scripts_dir = os.path.join(createuserpkg_dir, 'pkg_scripts')
-        for script in ['create_user.py', 'postinstall']:
+        for script in ['createuser', 'postinstall']:
             source = os.path.join(pkg_scripts_dir, script)
             dest = os.path.join(scripts_path, script)
             shutil.copyfile(source, dest)
