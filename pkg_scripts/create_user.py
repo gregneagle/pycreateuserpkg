@@ -79,12 +79,50 @@ def create_user_record(username):
     return record
 
 
+def get_attribute_for_user(attr, user_record):
+    """Returns value(s) for an attribute"""
+    values, err = user_record.valuesForAttribute_error_(attr, None)
+    if err:
+        print >> sys.stderr, err
+    return values
+
+
+def auth_authority_item_type(authentication_authority_item):
+    """Returns the 'type' tag at the front of a authentication authority item
+    ie: ShadowHash, Kerberosv5, SecureToken, etc"""
+    try:
+        return authentication_authority_item.split(";")[1]
+    except IndexError:
+        return None
+
+
+def merge_authentication_authorities(managed_auth_authority, user_record):
+    """Merge two authentication_authority values, giving precedence to the
+    managed_auth_authority"""
+    existing_auth_authority = get_attribute_for_user(
+        "authentication_authority", user_record)
+    if existing_auth_authority:
+        managed_types = [auth_authority_item_type(item)
+                         for item in managed_auth_authority]
+        for item in existing_auth_authority:
+            if auth_authority_item_type(item) not in managed_types:
+                # keep this authentication_authority item from the
+                # existing value
+                managed_auth_authority.append(item)
+    return managed_auth_authority
+
+
 def set_attributes_for_user(attrs, user_record, attrs_to_skip=None):
     """Sets user record attributes"""
     if attrs_to_skip is None:
         attrs_to_skip = []
     if user_record:
         for attr, value in attrs.items():
+            if attr == "authentication_authority":
+                # preserve any pre-exisiting authentication_authority items we
+                # don't have in our managed plist (SecureToken being the really
+                # important one here)
+                value = merge_authentication_authorities(value, user_record)
             if attr not in attrs_to_skip:
                 success, err = user_record.setValue_forAttribute_error_(
                     value, attr, None
