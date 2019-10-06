@@ -15,7 +15,6 @@
 '''Functions for generating JPEGPhoto'''
 
 
-import binascii
 import os
 
 def jpeg_photo_from_file(file_path):
