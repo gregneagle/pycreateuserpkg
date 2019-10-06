@@ -27,6 +27,7 @@ from locallibs import kcpassword
 from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
+from locallibs import jpegphoto
 
 
 def main():
@@ -61,6 +62,9 @@ def main():
         '--generateduid', '-G', help='GeneratedUID (UUID). Optional.')
     optional_user_options.add_option(
         '--hint', help='User password hint. Optional.')
+
+    optional_user_options.add_option(
+        '--jpegphoto', help='Path to JPEG photo that contains a profile picture. Image should be square and recommended 512px x 512px and JPEG (RGB).  Optional.')
 
     optional_user_options.add_option(
         '--home', '-H', help='Path to user home directory. Optional.')
@@ -107,6 +111,7 @@ def main():
             print >> sys.stderr, "Password mismatch!"
             exit(-1)
 
+
     # make user plist
     user_data = {'name': options.name,
                  'uid': options.uid,
@@ -125,6 +130,11 @@ def main():
         user_data['IsHidden'] = u'YES'
     if options.hint:
         user_data['hint'] = options.hint
+
+    if options.jpegphoto:
+        jpeg_data=jpegphoto.jpeg_photo_from_file(options.jpegphoto)
+        if (len(jpeg_data)>0):
+            user_data['image_data'] = jpeg_data
 
     user_plist = userplist.generate(user_data)
 
