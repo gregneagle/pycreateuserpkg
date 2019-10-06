@@ -19,7 +19,7 @@ import binascii
 import os
 
 def jpeg_photo_from_file(file_path):
-    '''Read in a file and return binary data as ascii formatted for plist (groups of 4 bytes)'''
+    '''Read in a file and return binary data'''
 
     photo_data=buffer("")
     if os.path.exists(file_path):
