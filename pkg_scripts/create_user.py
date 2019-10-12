@@ -196,9 +196,10 @@ def main():
     else:
         # existing user record we're updating
         if major_darwin_version() >= 18:
-            # Mojave prevents us from updating these attributes without
-            # user approval
-            attrs_to_skip = ['uid', 'home']
+            # Mojave+ prevents us from updating uid and home without
+            # user approval; updating generateduid on an existing account
+            # breaks FileVault for that account
+            attrs_to_skip = ['uid', 'home', 'generateduid']
     success = set_attributes_for_user(
         userdata, record, attrs_to_skip=attrs_to_skip)
     if not success:
