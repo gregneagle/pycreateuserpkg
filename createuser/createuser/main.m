@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import <OpenDirectory/OpenDirectory.h>
 
+NSString * kAuthenticationAuthorityKey = @"authentication_authority";
 
 ODNode * localDSNode() {
     // returns local DS node
@@ -67,6 +68,41 @@ ODRecord * createUserRecord(NSString * userName) {
     return record;
 }
 
+NSArray * getAttributeForUser(NSString * attr, ODRecord * userRecord) {
+    // Returns value of an attribute for userRecord
+    NSError * err = nil;
+    NSArray * values = [userRecord valuesForAttribute:(ODAttributeType)attr error:&err];
+    if (err != nil) {
+        NSLog(@"Error retreiving attribute %@: %@", attr, err);
+    }
+    return values;
+}
+
+NSString * authAuthorityType(NSString * auth_authority_item) {
+    // Returns 'type' of an authentication authority item
+    // ie: ShadowHash, Kerberosv5, SecureToken, etc
+    NSArray * items = [auth_authority_item componentsSeparatedByString:@";"];
+    return items[1];
+}
+
+NSArray * mergeAuthenticationAuthorities(NSArray * managed_auth_authority, ODRecord * userRecord) {
+    // Merge two authentication_authority values, giving precedence to the
+    // managed_auth_authority
+    NSMutableArray * mergedAuthAuthorities = [NSMutableArray arrayWithArray: managed_auth_authority];
+    NSArray * existingAuthAuthority = getAttributeForUser(kAuthenticationAuthorityKey, userRecord);
+    if (existingAuthAuthority != nil) {
+        NSMutableArray * managedTypes = [NSMutableArray arrayWithCapacity: [managed_auth_authority count]];
+        for (id item in managed_auth_authority) [managedTypes addObject: authAuthorityType((NSString *)item)];
+        for (id item in existingAuthAuthority) {
+            if (![managedTypes containsObject: authAuthorityType((NSString *)item)]) {
+                // add this item to the array of authentication authorities
+                [mergedAuthAuthorities addObject: item];
+            }
+        }
+    }
+    return (NSArray *)mergedAuthAuthorities;
+}
+
 Boolean setAttributesForUser(NSDictionary * attrs, ODRecord * userRecord, NSArray * attrsToSkip) {
     // Sets attributes for user record
     if (attrsToSkip == nil) {
@@ -75,8 +111,15 @@ Boolean setAttributesForUser(NSDictionary * attrs, ODRecord * userRecord, NSArra
     NSError * err = nil;
     if (userRecord != nil) {
         for (NSString * key in attrs) {
+            id value = attrs[key];
+            if ([key isEqualToString: kAuthenticationAuthorityKey]) {
+                // preserve any pre-exisiting authentication_authority items we
+                // don't have in our managed plist (SecureToken being the really
+                // important one here)
+                value = mergeAuthenticationAuthorities((NSArray *)value, userRecord);
+            }
             if (![attrsToSkip containsObject: key]){
-                Boolean success = [userRecord setValue:attrs[key] forAttribute:key error: &err];
+                Boolean success = [userRecord setValue:value forAttribute:key error: &err];
                 if (!success) {
                     NSLog(@"Could not set attribute %@ to %@: %@", key, attrs[key], err);
                     return NO;
@@ -87,6 +130,7 @@ Boolean setAttributesForUser(NSDictionary * attrs, ODRecord * userRecord, NSArra
     }
     return NO;
 }
+
 
 id readPlist(NSString * filename) {
     // returns data structure from a plist file
