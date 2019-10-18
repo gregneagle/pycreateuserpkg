@@ -101,6 +101,8 @@ def main():
     if options.password == 'none':
         password=""
     elif options.password:
+        password = options.password
+    else:
         password = getpass.getpass('Password: ')
         password_again = getpass.getpass('Password (again): ')
         if password != password_again:
