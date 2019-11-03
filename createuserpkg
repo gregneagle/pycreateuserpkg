@@ -98,7 +98,9 @@ def main():
         exit(-1)
     filename = arguments[0]
 
-    if options.password:
+    if options.password == 'none':
+        password=""
+    elif options.password:
         password = options.password
     else:
         password = getpass.getpass('Password: ')
