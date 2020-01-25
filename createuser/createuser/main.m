@@ -32,7 +32,7 @@ ODNode * localDSNode() {
     if (mySession == nil) {
         return nil;
     }
-    NSError * err = nil;
+    NSError * err;
     ODNode *node = [ODNode nodeWithSession:mySession name:@"/Local/Default" error: &err];
     if (err != nil) {
         NSLog(@"Could not get local DS node: %@", err);
@@ -42,8 +42,8 @@ ODNode * localDSNode() {
 
 ODRecord * getUserRecord(NSString * userName) {
     // Returns a user record
-    ODRecord * record = nil;
-    NSError * err = nil;
+    ODRecord * record;
+    NSError * err;
     ODNode * node = localDSNode();
     if (node != nil) {
         record = [node recordWithRecordType:kODRecordTypeUsers name:userName attributes:nil error: &err];
@@ -56,8 +56,8 @@ ODRecord * getUserRecord(NSString * userName) {
 
 ODRecord * createUserRecord(NSString * userName) {
     // Creates a user record and returns it
-    ODRecord * record = nil;
-    NSError * err = nil;
+    ODRecord * record;
+    NSError * err;
     ODNode * node = localDSNode();
     if (node != nil) {
         record = [node createRecordWithRecordType:kODRecordTypeUsers name:userName attributes:nil error: &err];
@@ -70,7 +70,7 @@ ODRecord * createUserRecord(NSString * userName) {
 
 NSArray * getAttributeForUser(NSString * attr, ODRecord * userRecord) {
     // Returns value of an attribute for userRecord
-    NSError * err = nil;
+    NSError * err;
     NSArray * values = [userRecord valuesForAttribute:(ODAttributeType)attr error:&err];
     if (err != nil) {
         NSLog(@"Error retreiving attribute %@: %@", attr, err);
@@ -82,13 +82,17 @@ NSString * authAuthorityType(NSString * auth_authority_item) {
     // Returns 'type' of an authentication authority item
     // ie: ShadowHash, Kerberosv5, SecureToken, etc
     NSArray * items = [auth_authority_item componentsSeparatedByString:@";"];
+    if (items.count < 2) {
+        NSLog(@"Unexpected authentication authority item format: %@", auth_authority_item);
+        exit(-1);
+    }
     return items[1];
 }
 
 NSArray * mergeAuthenticationAuthorities(NSArray * managed_auth_authority, ODRecord * userRecord) {
     // Merge two authentication_authority values, giving precedence to the
     // managed_auth_authority
-    NSMutableArray * mergedAuthAuthorities = [NSMutableArray arrayWithArray: managed_auth_authority];
+    NSMutableArray * mergedAuthAuthorities = [managed_auth_authority mutableCopy];
     NSArray * existingAuthAuthority = getAttributeForUser(kAuthenticationAuthorityKey, userRecord);
     if (existingAuthAuthority != nil) {
         NSMutableArray * managedTypes = [NSMutableArray arrayWithCapacity: [managed_auth_authority count]];
@@ -103,12 +107,12 @@ NSArray * mergeAuthenticationAuthorities(NSArray * managed_auth_authority, ODRec
     return (NSArray *)mergedAuthAuthorities;
 }
 
-Boolean setAttributesForUser(NSDictionary * attrs, ODRecord * userRecord, NSArray * attrsToSkip) {
+BOOL setAttributesForUser(NSDictionary * attrs, ODRecord * userRecord, NSArray * attrsToSkip) {
     // Sets attributes for user record
     if (attrsToSkip == nil) {
         attrsToSkip = @[];
     }
-    NSError * err = nil;
+    NSError * err;
     if (userRecord != nil) {
         for (NSString * key in attrs) {
             id value = attrs[key];
@@ -142,7 +146,7 @@ id readPlist(NSString * filename) {
     }
     // attempt to parse it as a plist
     NSPropertyListFormat fileFormat = 0;
-    NSError * err = nil;
+    NSError * err;
     id plist = [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:&fileFormat error:&err];
     if (err != nil) {
         NSLog(@"Could not parse plist data from %@: %@", filename, err);
@@ -158,18 +162,18 @@ int main(int argc, const char * argv[]) {
             return -1;
         }
         // attempt to read in the passed-in file
-        NSString * filename = [NSString stringWithCString:argv[1] encoding:NSUTF8StringEncoding];
+        NSString * filename = @(argv[1]);
         id userdata = readPlist(filename);
         if (userdata == nil) {
             return -1;
         }
         NSArray * usernameList = [(NSDictionary *)userdata objectForKey: @"name"];
-        if (usernameList == nil) {
+        if (!usernameList.count) {
             NSLog(@"Could not get user name from plist - missing key 'name'");
             return -1;
         }
         NSString * username = usernameList[0];
-        if (username == nil) {
+        if (!username.length) {
             NSLog(@"Could not get user name from plist!");
             return -1;
         }
@@ -189,7 +193,7 @@ int main(int argc, const char * argv[]) {
             // breaks FileVault for that account
             attrsToSkip = @[@"uid", @"home", @"generateduid"];
         }
-        Boolean success = setAttributesForUser((NSDictionary *)userdata, record, attrsToSkip);
+        BOOL success = setAttributesForUser((NSDictionary *)userdata, record, attrsToSkip);
         if (!success) {
             return -1;
         }
