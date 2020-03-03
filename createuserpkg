@@ -67,6 +67,9 @@ def main():
     optional_user_options.add_option(
         '--shell', '-s', help='User shell path. Optional.')
     optional_user_options.add_option(
+        '--token', '-t', action="append",
+        help='User token identity hash. Optional, may be repeated.')
+    optional_user_options.add_option(
         '--admin', '-a', action='store_true',
         help='User account should be added to admin group.')
     optional_user_options.add_option(
@@ -112,7 +115,9 @@ def main():
     # make user plist
     user_data = {'name': options.name,
                  'uid': options.uid,
+                 'authentication_authority': [],
                  'ShadowHashData': shadowhash.generate(password)}
+    user_data['authentication_authority'].append(';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>')
     if options.fullname:
         user_data['realname'] = options.fullname
     if options.gid:
@@ -127,6 +132,10 @@ def main():
         user_data['IsHidden'] = u'YES'
     if options.hint:
         user_data['hint'] = options.hint
+    if options.token:
+        user_data['authentication_authority'].append(';SecureToken;')
+        for token in options.token:
+            user_data['authentication_authority'].append(';tokenidentity;%s' % token)
 
     user_plist = userplist.generate(user_data)
 

@@ -40,8 +40,7 @@ def generate(user_dict):
     user[u'shell'] = [user_dict.get(u'shell', u'/bin/bash')]
     user[u'generateduid'] = [user_dict.get(u'uuid', str(uuid.uuid4()).upper())]
     user[u'passwd'] = [u'********']
-    user[u'authentication_authority'] = [
-        ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>']
+    user[u'authentication_authority'] = user_dict['authentication_authority']
     user[u'ShadowHashData'] = [user_dict['ShadowHashData']]
     for key in writers_keys:
         user[key] = [user_dict[u'name']]
