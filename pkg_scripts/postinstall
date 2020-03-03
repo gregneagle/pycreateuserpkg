@@ -43,6 +43,11 @@ MYDIR=${0%/*}
 source "$MYDIR/config"
 
 if [ "$3" == "/" ]; then
+    # if uid exists and username mismatch
+    if id -u $USERID >/dev/null && [[ $(id -un $USERID) != $USERNAME ]]; then
+        >&2 echo "error: uid $USERID alread exists as user \"$(id -un $USERID)\""
+        exit -1
+    fi
     # create user using OpenDirectory APIs
     "$MYDIR"/createuser "$MYDIR/$USERNAME.plist"
     # we're operating on the boot volume
