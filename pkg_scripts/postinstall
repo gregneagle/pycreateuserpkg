@@ -45,6 +45,10 @@ source "$MYDIR/config"
 if [ "$3" == "/" ]; then
     # create user using OpenDirectory APIs
     "$MYDIR"/createuser "$MYDIR/$USERNAME.plist"
+    if [ "$?" -ne 0 ] ; then
+        # createuser failed, can't continue
+        exit -1
+    fi
     # we're operating on the boot volume
     if [ "$USER_IS_ADMIN" == "True" ]; then
         # add $USERNAME to admin group
