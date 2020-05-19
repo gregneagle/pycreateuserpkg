@@ -73,7 +73,8 @@ def main():
         '--autologin', '-A', action='store_true',
         help='User account should automatically login.')
     optional_user_options.add_option('--hidden', action='store_true',
-                            help='User account should be hidden.')
+        help='User account should be hidden.')
+    optional_user_options.add_option('--productbuild', '-d', action='store_true', help='Creates a distribution-style package for use with startosinstall')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
@@ -135,7 +136,8 @@ def main():
     pkg_data = {'version': options.version,
                 'pkgid': options.identifier,
                 'destination_path': filename,
-                'user_plist': user_plist}
+                'user_plist': user_plist,
+                'productbuild': options.productbuild}
     if options.autologin:
         pkg_data['kcpassword'] = kcpassword.generate(password)
     if options.admin:
@@ -145,7 +147,6 @@ def main():
 
     # build the package
     userpkg.generate(pkg_data, createuserpkg_dir)
-
 
 if __name__ == '__main__':
     main()
