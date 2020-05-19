@@ -96,17 +96,40 @@ def generate(info, createuserpkg_dir):
             dest = os.path.join(scripts_path, script)
             shutil.copyfile(source, dest)
             os.chmod(dest, 0755)
-        cmd = ['/usr/bin/pkgbuild',
-               '--ownership', 'recommended',
-               '--identifier', info[u'pkgid'],
-               '--version', info[u'version'],
-               '--root', pkg_root_path,
-               '--scripts', scripts_path,
-               os.path.expanduser(info[u'destination_path'])
-              ]
-        retcode = subprocess.call(cmd)
-        if retcode:
-            raise PkgException('Package creation failed')
+        if info['productbuild']:
+            temp_pkg = os.path.join(pkg_root_path, "temp.pkg")
+            cmd_pkg = ['/usr/bin/pkgbuild',
+                       '--ownership', 'recommended',
+                       '--identifier', info[u'pkgid'],
+                       '--version', info[u'version'],
+                       '--root', pkg_root_path,
+                       '--scripts', scripts_path,
+                       temp_pkg
+                      ]
+            retcode_pkg = subprocess.call(cmd_pkg)
+            if retcode_pkg:
+                raise PkgException('Package creation failed')
+            cmd_product = ['/usr/bin/productbuild',
+                           '--package', temp_pkg,
+                           '--identifier', info[u'pkgid'],
+                           '--version', info[u'version'],
+                           os.path.expanduser(info[u'destination_path'])
+                          ]
+            retcode_product = subprocess.call(cmd_product)
+            if retcode_product:
+                raise PkgException('Product creation failed')
+        else:
+            cmd = ['/usr/bin/pkgbuild',
+                   '--ownership', 'recommended',
+                   '--identifier', info[u'pkgid'],
+                   '--version', info[u'version'],
+                   '--root', pkg_root_path,
+                   '--scripts', scripts_path,
+                   os.path.expanduser(info[u'destination_path'])
+                  ]
+            retcode = subprocess.call(cmd)
+            if retcode:
+                raise PkgException('Package creation failed')
     except (OSError, IOError), err:
         raise PkgException(unicode(err))
     finally:
