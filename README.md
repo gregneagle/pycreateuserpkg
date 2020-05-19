@@ -47,6 +47,7 @@ Options:
     -a, --admin         User account should be added to admin group.
     -A, --autologin     User account should automatically login.
     --hidden            User account should be hidden.
+    -d, --productbuild  Creates a distribution-style package for use with startosinstall
 
 ```
 
