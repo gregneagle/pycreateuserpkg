@@ -27,7 +27,7 @@ from locallibs import kcpassword
 from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
-
+from locallibs import productbuild
 
 def main():
     '''Main'''
@@ -136,8 +136,7 @@ def main():
     pkg_data = {'version': options.version,
                 'pkgid': options.identifier,
                 'destination_path': filename,
-                'user_plist': user_plist,
-                'productbuild': options.productbuild}
+                'user_plist': user_plist}
     if options.autologin:
         pkg_data['kcpassword'] = kcpassword.generate(password)
     if options.admin:
@@ -147,6 +146,9 @@ def main():
 
     # build the package
     userpkg.generate(pkg_data, createuserpkg_dir)
+
+    if options.productbuild:
+        productbuild.generate(pkg_data, createuserpkg_dir)
 
 if __name__ == '__main__':
     main()
