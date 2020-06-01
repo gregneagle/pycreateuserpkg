@@ -48,6 +48,9 @@ Options:
     -A, --autologin     User account should automatically login.
     --hidden            User account should be hidden.
 
+  Optional Package Options:
+    -d, --distribution  Creates a distribution-style package for use with
+                        startosinstall
 ```
 
 #### Example:
