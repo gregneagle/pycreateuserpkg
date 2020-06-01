@@ -74,11 +74,15 @@ def main():
         help='User account should automatically login.')
     optional_user_options.add_option('--hidden', action='store_true',
         help='User account should be hidden.')
-    optional_user_options.add_option('--productbuild', '-d', action='store_true', help='Creates a distribution-style package for use with startosinstall')
+
+    optional_package_options = optparse.OptionGroup(
+        parser, 'Optional Package Options')
+    optional_package_options.add_option('--distribution', '-d', action='store_true', help='Creates a distribution-style package for use with startosinstall')
 
     parser.add_option_group(required_user_options)
     parser.add_option_group(required_package_options)
     parser.add_option_group(optional_user_options)
+    parser.add_option_group(optional_package_options)
 
     options, arguments = parser.parse_args()
 
@@ -147,7 +151,7 @@ def main():
     # build the package
     userpkg.generate(pkg_data, createuserpkg_dir)
 
-    if options.productbuild:
+    if options.distribution:
         productbuild.generate(pkg_data, createuserpkg_dir)
 
 if __name__ == '__main__':

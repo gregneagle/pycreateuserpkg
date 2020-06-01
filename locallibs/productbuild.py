@@ -12,8 +12,6 @@ def generate(info, createuserpkg_dir):
     component_pkg = os.path.dirname(info[u'destination_path']) + "/.tmp.pkg"
     shutil.move(os.path.expanduser(info[u'destination_path']), component_pkg)
 
-    print "Overwriting {} for product creation".format(os.path.expanduser(info[u'destination_path']))
-
     # Create distribution package
     try:
         cmd = ['/usr/bin/productbuild',
