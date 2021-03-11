@@ -64,6 +64,18 @@ if [ "$3" == "/" ]; then
         # set AutoLogin preference, working around path issue with 'defaults'
         /usr/bin/defaults write "/Library/Preferences/com.apple.loginwindow" autoLoginUser "$USERNAME"
     fi
+    if [[ "$CREATEHOME" == "True" || "$KEY" != "False" ]]; then
+        # create home directory
+        /usr/sbin/createhomedir -c -u $USERNAME
+
+        if [[ "$KEY" != "False" ]]; then
+            # create authorized_keys file and populate...do this as the user to pick up home and gid
+            /usr/bin/sudo -u $USERNAME -H -s eval '/bin/mkdir -p ~/.ssh'
+            /usr/bin/sudo -u $USERNAME -H -s eval '/bin/chmod 700 ~/.ssh'
+            /usr/bin/sudo -u $USERNAME -H -s eval "/bin/echo '${KEY}' >> ~/.ssh/authorized_keys"
+            /usr/bin/sudo -u $USERNAME -H -s eval '/bin/chmod 600 ~/.ssh/authorized_keys'
+        fi
+    fi
 else
     # we're installing to non-boot volume; probably from Recovery-like or
     # AutoDMG environment - so we can just copy the user plist into place

@@ -37,12 +37,16 @@ def make_config_file(scripts_path, pkg_info):
     uuid = user_plist[u'generateduid'][0]
     user_is_admin = pkg_info.get('is_admin', False)
     enable_autologin = (pkg_info.get('kcpassword') != None)
+    createhome = pkg_info.get('createhome', False)
+    key = pkg_info.get('key', False)
     config_content = """
 USERNAME="%s"
 UUID=%s
 USER_IS_ADMIN=%s
 ENABLE_AUTOLOGIN=%s
-""" % (username, uuid, user_is_admin, enable_autologin)
+CREATEHOME=%s
+KEY="%s"
+""" % (username, uuid, user_is_admin, enable_autologin, createhome, key)
     config_path = os.path.join(scripts_path, "config")
     try:
         fileref = open(config_path, 'w')
