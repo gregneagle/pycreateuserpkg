@@ -14,7 +14,7 @@
 
 '''Generates our user account plist'''
 
-import uuid
+import subprocess
 
 
 class UserPlistException(Exception):
@@ -38,7 +38,7 @@ def generate(user_dict):
     user[u'home'] = [user_dict.get(u'home', u'/Users/%s' % user_dict[u'name'])]
     user[u'realname'] = [user_dict.get(u'realname', user_dict[u'name'])]
     user[u'shell'] = [user_dict.get(u'shell', u'/bin/bash')]
-    user[u'generateduid'] = [user_dict.get(u'uuid', str(uuid.uuid4()).upper())]
+    user[u'generateduid'] = [user_dict.get(u'uuid', str(subprocess.check_output("uuidgen", shell=True, universal_newlines=True).strip()).upper())]
     user[u'passwd'] = [u'********']
     user[u'authentication_authority'] = [
         ';ShadowHash;HASHLIST:<SALTED-SHA512-PBKDF2>']
