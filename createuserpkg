@@ -119,7 +119,7 @@ def main():
                  'uid': options.uid,
                  'ShadowHashData': shadowhash.generate(password)}
     if options.fullname:
-        user_data['realname'] = options.fullname
+        user_data['realname'] = options.fullname.decode("utf-8")
     if options.gid:
         user_data['gid'] = options.gid
     if options.generateduid:
@@ -131,7 +131,7 @@ def main():
     if options.hidden:
         user_data['IsHidden'] = u'YES'
     if options.hint:
-        user_data['hint'] = options.hint
+        user_data['hint'] = options.hint.decode("utf-8")
 
     user_plist = userplist.generate(user_data)
 
