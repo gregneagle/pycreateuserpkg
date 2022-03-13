@@ -14,6 +14,8 @@
 
 '''plist utility functions'''
 
+from __future__ import absolute_import
+
 # PyLint cannot properly find names inside Cocoa libraries, so issues bogus
 # No name 'Foo' in module 'Bar' warnings. Disable them.
 # pylint: disable=E0611

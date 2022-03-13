@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright 2017 Greg Neagle.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +15,9 @@
 '''createuserpkg.py
 A tool for creating Apple installer packages that create/update user accounts
 on macOS. Much code borrowed and/or inpsired by Per Olofsson's CreateUserPkg'''
+
+from __future__ import absolute_import, print_function
+
 
 import optparse
 import sys
@@ -91,14 +92,14 @@ def main():
     missing_required_options = False
     for option in required_options:
         if not hasattr(options, option) or getattr(options, option) is None:
-            print >> sys.stderr, 'Missing required option: %s' % option
+            print("Missing required option: %s" % option, file=sys.stderr)
             missing_required_options = True
     if missing_required_options:
         parser.print_help()
         exit(-1)
 
     if len(arguments) != 1:
-        print >> sys.stderr, "Must provide exactly one filename!"
+        print("Must provide exactly one filename!", file=sys.stderr)
         parser.print_help()
         exit(-1)
     filename = arguments[0]
@@ -111,7 +112,7 @@ def main():
         password = getpass.getpass('Password: ')
         password_again = getpass.getpass('Password (again): ')
         if password != password_again:
-            print >> sys.stderr, "Password mismatch!"
+            print("Password mismatch!", file=sys.stderr)
             exit(-1)
 
     # make user plist

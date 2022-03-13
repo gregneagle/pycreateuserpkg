@@ -14,6 +14,8 @@
 
 '''Generates our user account plist'''
 
+from __future__ import absolute_import
+
 import uuid
 
 

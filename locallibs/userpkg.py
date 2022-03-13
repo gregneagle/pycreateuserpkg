@@ -16,6 +16,8 @@
 
 # Much borrowed from https://github.com/MagerValp/CreateUserPkg/
 
+from __future__ import absolute_import
+
 import os
 import shutil
 import subprocess
@@ -48,9 +50,9 @@ ENABLE_AUTOLOGIN=%s
         fileref = open(config_path, 'w')
         fileref.write(config_content)
         fileref.close()
-        os.chmod(config_path, 0755)
-    except (OSError, IOError), err:
-        raise PkgException(unicode(err))
+        os.chmod(config_path, 0o755)
+    except (OSError, IOError) as err:
+        raise PkgException(err)
 
 
 def generate(info, createuserpkg_dir):
@@ -70,22 +72,22 @@ def generate(info, createuserpkg_dir):
         os.mkdir(pkg_root_path)
         # Create package structure inside root for psuedo-payload-free pkg
         os.makedirs(os.path.join(pkg_root_path, "private/tmp"))
-        os.chmod(os.path.join(pkg_root_path, "private/tmp"), 01777)
+        os.chmod(os.path.join(pkg_root_path, "private/tmp"), 0o1777)
         # Create scripts directory
         scripts_path = os.path.join(tmp_path, 'scripts')
-        os.makedirs(scripts_path, 0755)
+        os.makedirs(scripts_path, 0o755)
         # Save user plist.
         user_plist_name = "%s.plist" % utf8_username
         user_plist_path = os.path.join(scripts_path, user_plist_name)
         plistutils.write_plist(info[u'user_plist'], pathname=user_plist_path)
-        os.chmod(user_plist_path, 0600)
+        os.chmod(user_plist_path, 0o600)
         # Save kcpassword.
         if info.get('kcpassword'):
             kcpassword_path = os.path.join(scripts_path, 'kcpassword')
             fileref = open(kcpassword_path, 'w')
             fileref.write(info.get('kcpassword'))
             fileref.close()
-            os.chmod(kcpassword_path, 0600)
+            os.chmod(kcpassword_path, 0o600)
         # now the config file
         make_config_file(scripts_path, info)
         # now copy postinstall and create_user.py to scripts dir
@@ -95,7 +97,7 @@ def generate(info, createuserpkg_dir):
             source = os.path.join(pkg_scripts_dir, script)
             dest = os.path.join(scripts_path, script)
             shutil.copyfile(source, dest)
-            os.chmod(dest, 0755)
+            os.chmod(dest, 0o755)
         cmd = ['/usr/bin/pkgbuild',
                '--ownership', 'recommended',
                '--identifier', info[u'pkgid'],
@@ -107,7 +109,7 @@ def generate(info, createuserpkg_dir):
         retcode = subprocess.call(cmd)
         if retcode:
             raise PkgException('Package creation failed')
-    except (OSError, IOError), err:
-        raise PkgException(unicode(err))
+    except (OSError, IOError) as err:
+        raise PkgException(err)
     finally:
         shutil.rmtree(tmp_path, ignore_errors=True)

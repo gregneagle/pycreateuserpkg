@@ -13,11 +13,12 @@ Examples
 >>> arc4random.randsample(0,1, 10)
 [1, 1, 0, 1, 1, 0, 1, 1, 1, 1]
 '''
+from __future__ import absolute_import
 
 import random
 
 def rand():
-    key = random.sample(range(256), 256) # something
+    key = random.sample(list(range(256)), 256) # something
     seeds = _RC4PRGA(_RC4keySchedule(key))
     return (seeds[0]<<24)|(seeds[1]<<16)|(seeds[2]<<8)|seeds[3]
 

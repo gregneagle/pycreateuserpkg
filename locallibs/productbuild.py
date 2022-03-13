@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import os
 import shutil
 import subprocess
@@ -23,7 +25,7 @@ def generate(info, createuserpkg_dir):
         retcode = subprocess.call(cmd)
         if retcode:
             raise PkgException('Product creation failed')
-    except (OSError, IOError), err:
-        raise ProductBuildException(unicode(err))
+    except (OSError, IOError) as err:
+        raise ProductBuildException(err)
     finally:
         os.remove(component_pkg)

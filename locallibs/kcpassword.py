@@ -7,6 +7,8 @@
 # This version:
 # https://gitlab.cates.io/packer/osx-vm-templates/blob/1790a91e95af3f24ca464a28297cb66d29e1b5be/scripts/support/set_kcpassword.py
 
+from __future__ import absolute_import
+
 import sys
 import os
 

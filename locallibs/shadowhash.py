@@ -14,6 +14,8 @@
 
 '''Functions for generating ShadowHashData'''
 
+from __future__ import absolute_import
+
 import hashlib
 
 from . import arc4random
@@ -21,13 +23,19 @@ from . import pbkdf2
 
 from . import plistutils
 
+# remap buffer in Python 3
+try:
+    _ = buffer
+except NameError:
+    buffer = memoryview
+
 
 def make_salt(saltlen):
     '''Generate a random salt'''
-    salt = ''
+    salt = bytearray()
     for char in arc4random.randsample(0, 255, saltlen):
-        salt += chr(char)
-    return salt
+        salt.append(char)
+    return bytes(salt)
 
 
 def generate(password):
@@ -37,11 +45,11 @@ def generate(password):
     keylen = 128
     try:
         entropy = hashlib.pbkdf2_hmac(
-            'sha512', password, salt, iterations, dklen=keylen)
+            'sha512', password.encode("UTF-8"), salt, iterations, dklen=keylen)
     except AttributeError:
         # old Python, do it a different way
         entropy = pbkdf2.pbkdf2_bin(
-            password, salt, iterations=iterations, keylen=keylen,
+            password.encode("UTF-8"), salt, iterations=iterations, keylen=keylen,
             hashfunc=hashlib.sha512)
 
     data = {
