@@ -1,5 +1,10 @@
 Tool for generating packages that create macOS user accounts on
-10.8-10.15
+10.8-12.x
+
+#### NEW 13-March-2022:
+- Due to upcoming removal of Python 2 from macOS, the tool has been updated for compatibility with Python 3. There is still a dependency on PyObjC for plist writing, so this won't work out-of-the-box with the Python 3 installed as part of Xcode or the Command Line Development Tools (as these do not include PyObjC). This tool will work with Munki's Python, autopkg's Python, or the MacAdmins Python.
+- Extensive testing has not been done; it's possible there are new bugs caused by the changes. Please create issues for any new bugs discovered.
+- "createuserpkg" renamed to "createuserpkg.py" and shebang line removed. Call the tool with the desired Python: for example `munki-python createuserpkg.py [options]`
 
 #### NEW 12-Oct-2019:
 More changes when updating existing accounts to work better with FileVault-enabled accounts. Existing authentication_authority attributes other than the ShadowHash are now preserved, and the generateduid is not changed/updated. 
