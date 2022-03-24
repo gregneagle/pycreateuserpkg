@@ -35,7 +35,7 @@ class PkgException(Exception):
 def make_config_file(scripts_path, pkg_info):
     """Write out a config file the postinstall script can source"""
     user_plist = pkg_info['user_plist']
-    username = user_plist[u'name'][0].encode('utf-8')
+    username = user_plist[u'name'][0]
     uuid = user_plist[u'generateduid'][0]
     user_is_admin = pkg_info.get('is_admin', False)
     enable_autologin = (pkg_info.get('kcpassword') != None)
@@ -62,8 +62,7 @@ def generate(info, createuserpkg_dir):
     for key in required_keys:
         if key not in info:
             raise PkgException(u'Missing %s in pkg info!' % key)
-    utf8_username = info.get(
-        u'name', info[u'user_plist'][u'name'][0]).encode('utf-8')
+    username = info.get(u'name', info[u'user_plist'][u'name'][0])
     # Create a package with the plist for our user and a shadow hash file.
     tmp_path = tempfile.mkdtemp()
     try:
@@ -77,7 +76,7 @@ def generate(info, createuserpkg_dir):
         scripts_path = os.path.join(tmp_path, 'scripts')
         os.makedirs(scripts_path, 0o755)
         # Save user plist.
-        user_plist_name = "%s.plist" % utf8_username
+        user_plist_name = "%s.plist" % username
         user_plist_path = os.path.join(scripts_path, user_plist_name)
         plistutils.write_plist(info[u'user_plist'], pathname=user_plist_path)
         os.chmod(user_plist_path, 0o600)
