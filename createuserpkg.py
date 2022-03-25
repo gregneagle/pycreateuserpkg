@@ -29,6 +29,7 @@ from locallibs import shadowhash
 from locallibs import userplist
 from locallibs import userpkg
 from locallibs import productbuild
+from locallibs.wrappers import unicodify
 
 def main():
     '''Main'''
@@ -107,39 +108,40 @@ def main():
     if options.password == 'none':
         password=""
     elif options.password:
-        password = options.password
+        password = unicodify(options.password)
     else:
         password = getpass.getpass('Password: ')
         password_again = getpass.getpass('Password (again): ')
         if password != password_again:
             print("Password mismatch!", file=sys.stderr)
             exit(-1)
+        password = unicodify(password)
 
     # make user plist
-    user_data = {'name': options.name,
-                 'uid': options.uid,
+    user_data = {'name': unicodify(options.name),
+                 'uid': unicodify(options.uid),
                  'ShadowHashData': shadowhash.generate(password)}
     if options.fullname:
-        user_data['realname'] = options.fullname
+        user_data['realname'] = unicodify(options.fullname)
     if options.gid:
-        user_data['gid'] = options.gid
+        user_data['gid'] = unicodify(options.gid)
     if options.generateduid:
-        user_data['uuid'] = options.generateduid
+        user_data['uuid'] = unicodify(options.generateduid)
     if options.home:
-        user_data['home'] = options.home
+        user_data['home'] = unicodify(options.home)
     if options.shell:
-        user_data['shell'] = options.shell
+        user_data['shell'] = unicodify(options.shell)
     if options.hidden:
         user_data['IsHidden'] = u'YES'
     if options.hint:
-        user_data['hint'] = options.hint
+        user_data['hint'] = unicodify(options.hint)
 
     user_plist = userplist.generate(user_data)
 
 
     # set up package options/choices
-    pkg_data = {'version': options.version,
-                'pkgid': options.identifier,
+    pkg_data = {'version': unicodify(options.version),
+                'pkgid': unicodify(options.identifier),
                 'destination_path': filename,
                 'user_plist': user_plist}
     if options.autologin:
