@@ -18,7 +18,7 @@ Some options for providing an appropriate Python:
 You might ask "Why not change the shebang to `#!/usr/bin/env python3` or even `#!/usr/bin/python3`? That could break many current users of the tool who _haven't_ upgraded to macOS 12.3 and don't have Xcode and/or the Command line development tools installed. If/when you upgrade to macOS 12.3, you'll need to take some action anyway. No need to punish everyone else.
 
 #### NEW 13-March-2022:
-- Due to upcoming removal of Python 2 from macOS, the tool has been updated for compatibility with Python 3. There is still a dependency on PyObjC for plist writing, so this won't work out-of-the-box with the Python 3 installed as part of Xcode or the Command Line Development Tools (as these do not include PyObjC). This tool will work with Munki's Python, autopkg's Python, or the MacAdmins Python.
+- Due to the removal of Python 2 in macOS 12.3, the tool has been updated for compatibility with Python 3. There is still a dependency on PyObjC for plist writing, so this won't work out-of-the-box with the Python 3 installed as part of Xcode or the Command Line Development Tools (as these do not include PyObjC). This tool will work with Munki's Python, autopkg's Python, or the MacAdmins Python.
 - Extensive testing has not been done under Python 3; it's possible there are new bugs caused by the changes. Please create issues for any new bugs discovered.
 - "createuserpkg" renamed to "createuserpkg.py" and shebang line removed. Call the tool with the desired Python: for example `munki-python createuserpkg.py [options]`
 
