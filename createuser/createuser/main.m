@@ -26,7 +26,7 @@
 
 NSString * kAuthenticationAuthorityKey = @"authentication_authority";
 
-ODNode * localDSNode() {
+ODNode * localDSNode(void) {
     // returns local DS node
     ODSession * mySession = [ODSession defaultSession];
     if (mySession == nil) {
